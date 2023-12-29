@@ -56,7 +56,7 @@ impl<T: Display + 'static, V: Display + 'static + ?Sized> TraitcastableTo<dyn Ca
 // The `TARGETS` slice can not be declared inside the `traitcast_targets` function.
 // The "use of generic parameter from outer function" rust limitation is the cause.
 impl<T: Display + 'static> HybridPet<T> {
-  const TARGETS: &[TraitcastTarget] = &[
+  const TARGETS: &'static [TraitcastTarget] = &[
     TraitcastTarget::from::<Self, dyn Dog>(),
     TraitcastTarget::from::<Self, dyn Cat<str>>(),
   ];

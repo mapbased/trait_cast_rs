@@ -1,5 +1,4 @@
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
-#![feature(trait_upcasting)]
 #![allow(incomplete_features)]
 #![feature(ptr_metadata)]
 
@@ -11,6 +10,7 @@ use trait_cast_rs::{
 struct HybridPet {
   name: String,
 }
+
 impl TraitcastableTo<dyn Dog> for HybridPet {
   const METADATA: ::core::ptr::DynMetadata<dyn Dog> = {
     let ptr: *const HybridPet = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
@@ -31,13 +31,14 @@ impl TraitcastableTo<dyn Cat> for HybridPet {
 
 unsafe impl TraitcastableAny for HybridPet {
   fn traitcast_targets(&self) -> &[TraitcastTarget] {
-    const TARGETS: &[TraitcastTarget] = &[
+    const TARGETS: &'static [TraitcastTarget] = &[
       TraitcastTarget::from::<HybridPet, dyn Dog>(),
       TraitcastTarget::from::<HybridPet, dyn Cat>(),
     ];
     TARGETS
   }
 }
+
 impl HybridPet {
   fn greet(&self) {
     println!("{}: Hi", self.name)
@@ -49,6 +50,7 @@ impl Dog for HybridPet {
     println!("{}: Woof!", self.name);
   }
 }
+
 impl Cat for HybridPet {
   fn meow(&self) {
     println!("{}: Meow!", self.name);
@@ -58,9 +60,11 @@ impl Cat for HybridPet {
 trait Dog {
   fn bark(&self);
 }
+
 trait Cat: TraitcastableAny {
   fn meow(&self);
 }
+
 trait Mouse {}
 
 #[cfg_attr(test, test)]
